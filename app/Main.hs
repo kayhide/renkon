@@ -1,6 +1,6 @@
 module Main where
 
-import Lib
+import Renkon
 
 main :: IO ()
-main = someFunc
+main = start
