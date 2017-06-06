@@ -10,7 +10,9 @@ import GHC.Generics
 import Turtle
 
 data PathConfig = PathConfig
-  { _renkonRoot :: FilePath }
+  { _renkonRoot :: FilePath
+  , _renkonBin :: FilePath
+  }
   deriving (Show, Generic)
 
 makeLenses ''PathConfig
@@ -23,8 +25,8 @@ makeLenses ''Config
 
 setupPathConfig :: IO PathConfig
 setupPathConfig = do
-  home' <- home
-  return $ PathConfig (home' </> ".renkon")
+  root' <- (</> ".renkon") <$> home
+  return $ PathConfig root' (root' </> "bin")
 
 boot :: IO Config
 boot = Config <$> setupPathConfig

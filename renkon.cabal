@@ -16,9 +16,10 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Renkon
+                     , Renkon.Util
                      , Renkon.Config
                      , Renkon.Command
-                     , Renkon.Command.Data
+                     , Renkon.Command.Path
                      , Renkon.Command.List
   build-depends:       base >= 4.7 && < 5
                      , text
