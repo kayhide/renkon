@@ -27,6 +27,7 @@ library
                      , transformers
                      , mtl
                      , foldl
+                     , ansi-terminal
                      , turtle
   default-language:    Haskell2010
 

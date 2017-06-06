@@ -18,10 +18,14 @@ run = do
   bin' <- reader (^. path . renkonBin)
   exists <- liftIO $ testdir $ bin'
   when (not exists) $ do
-    printf (fp % " does not exist." % ln) $ bin'
+    withColor Vivid Red $ do
+      printf ("renkon root does not exist." % ln)
+    printf ("  " % fp) bin'
+    printf ln
     exit ExitSuccess
   echo "Available generators:"
-  stdout $ getBinFiles bin' >>= toLines
+  withColor Vivid Green $ do
+    stdout $ getBinFiles bin' >>= toTexts >>= toLines
 
 getBinFiles :: FilePath -> Shell FilePath
 getBinFiles bin' = do
@@ -30,8 +34,9 @@ getBinFiles bin' = do
   guard $ isJust file'
   return $ fromJust file'
 
-toLines :: FilePath -> Shell Line
-toLines file = do
-  let line = textToLine $ format fp $ file
-  guard $ isJust line
-  return $ fromJust line
+toTexts :: FilePath -> Shell Text
+toTexts = return . format ("  " % fp)
+
+toLines :: Text -> Shell Line
+toLines = select . textToLines
+
