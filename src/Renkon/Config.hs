@@ -26,7 +26,7 @@ makeLenses ''Config
 setupPathConfig :: IO PathConfig
 setupPathConfig = do
   root' <- (</> ".renkon") <$> home
-  return $ PathConfig root' (root' </> "bin")
+  return $ PathConfig root' (root' </> "bin/")
 
 boot :: IO Config
 boot = Config <$> setupPathConfig

@@ -5,6 +5,7 @@ module Renkon
   ) where
 
 import Data.Text
+import Control.Monad.Reader
 import Turtle
 
 import Renkon.Config
@@ -35,7 +36,7 @@ start = do
   x <- options "Renkon generators manager" parser
   config <- boot
   case x of
-    ListCommand -> ListCommand.run config
+    ListCommand -> sh $ flip runReaderT config ListCommand.run
     PathCommand -> PathCommand.run config
     GenerateCommand generator args -> do
       printf ("Launching " % s % " generator...\n") generator
