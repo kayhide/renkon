@@ -6,9 +6,10 @@ module Renkon
 
 import Turtle
 
+import Renkon.Config
+import Renkon.Command.Data
+import Renkon.Command.List as ListCommand
 
-data Command = ListCommand | GenerateCommand Text (Maybe Text)
-  deriving (Show)
 
 listParser :: Parser Command
 listParser = subcommand "list" "List the generators available" $ pure ListCommand
@@ -25,9 +26,11 @@ parser = listParser <|> generateParser
 start :: IO ()
 start = do
   x <- options "Renkon generators manager" parser
+  config <- boot
   print x
+  print config
   case x of
-    ListCommand -> printf ("Hello, "%s%"!\n") "world"
+    ListCommand -> ListCommand.run config
     GenerateCommand generator args -> do
       printf ("Launching " % s % " generator...\n") generator
       printf ("Args: " % w % "\n") args
