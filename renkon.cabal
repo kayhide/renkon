@@ -19,8 +19,10 @@ library
                      , Renkon.Util
                      , Renkon.Config
                      , Renkon.Command
+                     , Renkon.Command.Type
                      , Renkon.Command.Path
                      , Renkon.Command.List
+                     , Renkon.Command.Generate
   build-depends:       base >= 4.7 && < 5
                      , text
                      , lens

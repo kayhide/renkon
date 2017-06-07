@@ -9,12 +9,11 @@ import Control.Monad.Reader
 import Turtle
 
 import Renkon.Config
+import Renkon.Command
 import Renkon.Command.List as ListCommand
 import Renkon.Command.Path as PathCommand
+import Renkon.Command.Generate as GenerateCommand
 
-
-data Command = ListCommand | PathCommand | GenerateCommand Text (Maybe Text)
-  deriving (Show)
 
 listParser :: Parser Command
 listParser = subcommand "list" "List the generators available" $ pure ListCommand
@@ -45,5 +44,4 @@ runCommand config PathCommand =
   sh $ flip runReaderT config PathCommand.run
 
 runCommand config (GenerateCommand generator args) = do
-  printf ("Launching " % s % " generator...\n") generator
-  printf ("Args: " % w % "\n") args
+  sh $ flip runReaderT (config, generator, args) GenerateCommand.run
