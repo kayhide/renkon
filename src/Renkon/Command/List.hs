@@ -25,4 +25,10 @@ run = do
     exit ExitSuccess
   echo "Available generators:"
   withColor Vivid Green $ do
-    stdout $ ls bin' >>= toRelative bin' >>= toLines & indent 2
+    pre' <- reader (^. path . renkonPrefix)
+    stdout $ ls bin'
+      >>= toRelative bin'
+      >>= toLines
+      & grep (begins (text pre'))
+      & trimPrefix pre'
+      & indent 2

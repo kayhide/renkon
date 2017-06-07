@@ -44,6 +44,11 @@ toRelative base path = do
 toLines :: (ToDisplayText a) => a -> Shell Line
 toLines = select . textToLines . toDisplayText
 
+grepPrefix :: Text -> Shell Line -> Shell Line
+grepPrefix pre' = grep (begins (text pre'))
+
+trimPrefix :: Text -> Shell Line -> Shell Line
+trimPrefix pre' = sed (begins (text pre' *> pure ""))
 
 class ToDisplayText a where
   toDisplayText :: a -> Text

@@ -18,20 +18,24 @@ import Renkon.Command.Type
 run :: ReaderT (Config, Text, Maybe Text) Shell ()
 run = do
   (config, generator, args) <- reader id
-  gen <- fold (find (suffix (text ("/" <> generator))) (config ^. path . renkonBin)) Foldl.head
+  gen <- which $ fromText $ format (s % s) (config ^. path . renkonPrefix) generator
   when ((not . isJust) gen) $ do
     withColor Vivid Red $ do
       printf ("generator is not found." % ln)
     withColor Vivid White $ do
       stdout $ toLines generator & indent 2
     exit ExitSuccess
-  let (Right gen') = toText $ fromJust gen
+  let gen' = format fp $ fromJust gen
       args' = maybeToList args
       cmd = Text.intercalate " " (gen' : args')
-  printf ("Launching " % s % " generator..." % ln) generator
+  printf "Launching "
+  withBold $ do
+    withColor Vivid Green $ do
+      printf s generator
+  printf (" generator..." % ln)
   withColor Vivid White $ do
-    printf ("  bin: " % w % ln) gen'
+    printf ("  bin: " % s % ln) gen'
     printf ("  args: " % w % ln) args'
-    printf ("  cmd: " % w % ln) cmd
+    printf ("  cmd: " % s % ln) cmd
   printf ln
   void $ shell cmd empty
