@@ -42,7 +42,7 @@ runCommand config ListCommand =
   sh $ flip runReaderT config ListCommand.run
 
 runCommand config PathCommand =
-  PathCommand.run config
+  sh $ flip runReaderT config PathCommand.run
 
 runCommand config (GenerateCommand generator args) = do
   printf ("Launching " % s % " generator...\n") generator
