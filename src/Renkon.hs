@@ -33,11 +33,17 @@ parser = listParser <|> pathParser <|> generateParser
 
 start :: IO ()
 start = do
-  x <- options "Renkon generators manager" parser
+  command <- options "Renkon generators manager" parser
   config <- boot
-  case x of
-    ListCommand -> sh $ flip runReaderT config ListCommand.run
-    PathCommand -> PathCommand.run config
-    GenerateCommand generator args -> do
-      printf ("Launching " % s % " generator...\n") generator
-      printf ("Args: " % w % "\n") args
+  runCommand config command
+
+runCommand :: Config -> Command -> IO ()
+runCommand config ListCommand =
+  sh $ flip runReaderT config ListCommand.run
+
+runCommand config PathCommand =
+  PathCommand.run config
+
+runCommand config (GenerateCommand generator args) = do
+  printf ("Launching " % s % " generator...\n") generator
+  printf ("Args: " % w % "\n") args
