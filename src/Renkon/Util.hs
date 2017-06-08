@@ -18,15 +18,23 @@ import Turtle
 ln :: (a ~ b) => Format a b
 ln = "\n"
 
-withColor :: (MonadIO m) => ColorIntensity -> Color -> m () -> m ()
-withColor intencity color action = do
-  liftIO $ setSGR [SetColor Foreground intencity color]
+withColor :: (MonadIO m) => Color -> m () -> m ()
+withColor color action = do
+  liftIO $ setSGR [SetColor Foreground Dull color]
   action
   liftIO $ setSGR [Reset]
 
-withBold :: (MonadIO m) => m () -> m ()
-withBold action = do
-  liftIO $ setSGR [SetConsoleIntensity BoldIntensity]
+withVivid :: (MonadIO m) => Color -> m () -> m ()
+withVivid color action = do
+  liftIO $ setSGR [SetColor Foreground Vivid color]
+  action
+  liftIO $ setSGR [Reset]
+
+withBold :: (MonadIO m) => Color -> m () -> m ()
+withBold color action = do
+  liftIO $ setSGR [ SetColor Foreground Vivid color
+                  , SetConsoleIntensity BoldIntensity
+                  ]
   action
   liftIO $ setSGR [Reset]
 
