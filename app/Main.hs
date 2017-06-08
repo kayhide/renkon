@@ -1,6 +1,6 @@
 module Main where
 
-import Renkon
+import Renkon.Cli
 
 main :: IO ()
 main = start
