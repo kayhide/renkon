@@ -9,6 +9,7 @@ module Renkon.Util
 
 import Data.Maybe
 import Data.Text as Text
+import Data.Text.Lazy.Builder as Text
 import Control.Monad.IO.Class
 import System.Environment
 import System.FilePath
@@ -58,6 +59,10 @@ withBold color action = do
 
 -- * Formatting
 
--- | @ln@ formatter for formatting
+-- | @ln@ formatter
 ln :: Format r r
 ln = "\n"
+
+-- | @indent@ formatter
+indent :: Int -> Format r r
+indent n = now $ Text.fromText $ Text.replicate n " "
