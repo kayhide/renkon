@@ -2,44 +2,46 @@
 
 module Renkon.Command.List where
 
-import Prelude hiding (FilePath)
 import Data.Maybe
 import Control.Monad
+import Control.Monad.IO.Class
 import Control.Lens.Operators
-import Turtle
+import System.FilePath
+import System.Directory
+import Formatting
 
 import Renkon.Util
 import Renkon.Config
 
 
 run :: Config -> IO ()
-run config = sh $ do
+run config = do
   let root' = config ^. path . renkonRoot
       bin' = config ^. path . renkonBin
 
   onDirAbsence root' $ do
     withColor Red $ do
-      echo "renkon root does not exist."
+      fprint ("renkon root does not exist." % ln)
     withColor White $ do
-      stdout $ toLines root' & indent 2
+      fprint ("  " % string % ln) root'
     guard False
 
-  echo "Available generators:"
+  fprint ("Available generators:" % ln)
 
   onDirAbsence bin' $ do
     guard False
 
   let pre' = config ^. path . renkonPrefix
+  path' <- getSearchPath
+  gens' <- findFilesWith (return . isRenconGenerator) path' ""
   withColor Green $ do
-    stdout $ ls bin'
-      >>= toRelative bin'
-      >>= toLines
-      & grep (begins (text pre'))
-      & trimPrefix pre'
-      & indent 2
+    mapM_ (fprint ("  " % string % ln)) gens'
+
+isRenconGenerator :: FilePath -> Bool
+isRenconGenerator x = True
 
 onDirAbsence :: (MonadIO m) => FilePath -> m () -> m ()
 onDirAbsence dir action = do
-  exists <- testdir dir
+  exists <- liftIO $ doesDirectoryExist dir
   when (not exists) $ do
     action

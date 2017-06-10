@@ -1,41 +1,43 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Renkon.Command.Generate where
+module Renkon.Command.Generate
+  ( run
+  ) where
 
 import Data.Maybe
-import qualified Data.Text as Text
+import Data.Text as Text
 import Control.Monad
-import Control.Monad.Reader
 import Control.Lens.Operators
-import qualified Control.Foldl as Foldl
-import Turtle
+import System.Process
+import Formatting
 
 import Renkon.Util
 import Renkon.Config
 
 
+-- | Run generate command.
 run :: Config -> Text -> [Text] -> IO ()
-run config generator args = sh $ do
-  gen <- which $ fromText $ format (s % s) (config ^. path . renkonPrefix) generator
+run config generator args = do
+  gen <- which $ sformat (stext % stext) (config ^. path . renkonPrefix) generator
 
-  when ((not . isJust) gen) $ do
-    withColor Red $ do
-      printf ("generator is not found." % ln)
-    withVivid White $ do
-      stdout $ toLines generator & indent 2
-    guard False
+  case gen of
+    Nothing -> do
+      withColor Red $ do
+        fprint ("generator is not found." % ln)
+      withVivid White $ do
+        fprint ("  " % stext % ln) generator
+    Just gen' -> do
+      fprint "Launching "
+      withBold Green $ do
+        fprint stext generator
+      fprint (" generator..." % ln)
+      launch gen' args
 
-  let gen' = format fp $ fromJust gen
-      cmd = Text.intercalate " " (gen' : args)
-  printf "Launching "
-  withBold Green $ do
-    printf s generator
-  printf (" generator..." % ln)
 
+launch :: FilePath -> [Text] -> IO ()
+launch exe args = do
   withColor White $ do
-    printf ("  bin: " % s % ln) gen'
-    printf ("  args: " % w % ln) args
-    printf ("  cmd: " % s % ln) cmd
-  printf ln
-
-  void $ shell cmd empty
+    fprint ("  exe: " % string % ln) exe
+    fprint ("  args: " % shown % ln) args
+  fprint ln
+  execute exe args

@@ -5,7 +5,7 @@ module Renkon.Command.Path where
 import Control.Monad
 import Control.Monad.Reader
 import Control.Lens.Operators
-import Turtle
+import Formatting
 
 import Renkon.Util
 import Renkon.Config
@@ -13,5 +13,5 @@ import Renkon.Config
 
 run :: Config -> IO ()
 run config = do
-  printf ("renkon-root: " % fp % ln) $ config ^. path . renkonRoot
-  printf ("renkon-bin: " % fp % ln) $ config ^. path . renkonBin
+  fprint ("renkon-root: " % string % ln) $ config ^. path . renkonRoot
+  fprint ("renkon-bin: " % string % ln) $ config ^. path . renkonBin

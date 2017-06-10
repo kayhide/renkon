@@ -4,11 +4,12 @@
 
 module Renkon.Config where
 
-import Prelude hiding (FilePath)
-import qualified Data.Text as Text
+import Data.Text as Text
 import Control.Lens
+import System.Environment
+import System.FilePath
+import System.Directory
 import GHC.Generics
-import Turtle
 
 data PathConfig = PathConfig
   { _renkonRoot :: FilePath
@@ -27,7 +28,7 @@ makeLenses ''Config
 
 setupPathConfig :: IO PathConfig
 setupPathConfig = do
-  root' <- (</> ".renkon") <$> home
+  root' <- (</> ".renkon") <$> getHomeDirectory
   return $ PathConfig root' (root' </> "bin/") "renkon-"
 
 boot :: IO Config
@@ -38,6 +39,6 @@ boot = do
 
 exportPath :: Config -> IO ()
 exportPath config = do
-  Just path' <- need "PATH"
+  path' <- getEnv "PATH"
   let bin' = config ^. path . renkonBin
-  export "PATH" $ format (fp % ":" % s) bin' path'
+  setEnv "PATH" $ bin' ++ ":" ++ path'
