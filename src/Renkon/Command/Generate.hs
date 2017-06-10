@@ -14,9 +14,8 @@ import Renkon.Util
 import Renkon.Config
 
 
-run :: ReaderT (Config, Text, Maybe Text) Shell ()
-run = do
-  (config, generator, args) <- reader id
+run :: Config -> Text -> [Text] -> IO ()
+run config generator args = sh $ do
   gen <- which $ fromText $ format (s % s) (config ^. path . renkonPrefix) generator
 
   when ((not . isJust) gen) $ do
@@ -27,8 +26,7 @@ run = do
     guard False
 
   let gen' = format fp $ fromJust gen
-      args' = maybeToList args
-      cmd = Text.intercalate " " (gen' : args')
+      cmd = Text.intercalate " " (gen' : args)
   printf "Launching "
   withBold Green $ do
     printf s generator
@@ -36,7 +34,7 @@ run = do
 
   withColor White $ do
     printf ("  bin: " % s % ln) gen'
-    printf ("  args: " % w % ln) args'
+    printf ("  args: " % w % ln) args
     printf ("  cmd: " % s % ln) cmd
   printf ln
 

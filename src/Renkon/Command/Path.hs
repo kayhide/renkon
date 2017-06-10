@@ -11,8 +11,7 @@ import Renkon.Util
 import Renkon.Config
 
 
-run :: ReaderT Config Shell ()
-run = do
-  config <- reader id
+run :: Config -> IO ()
+run config = do
   printf ("renkon-root: " % fp % ln) $ config ^. path . renkonRoot
   printf ("renkon-bin: " % fp % ln) $ config ^. path . renkonBin

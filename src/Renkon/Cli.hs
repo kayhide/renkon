@@ -1,47 +1,45 @@
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Renkon.Cli
   ( start
   ) where
 
-import Data.Text
-import Control.Monad.Reader
-import Turtle
+import Data.Text as Text
+import Control.Monad.IO.Class
+import Options.Declarative as Options
 
 import Renkon.Config
-import Renkon.Command
 import Renkon.Command.List as ListCommand
 import Renkon.Command.Path as PathCommand
 import Renkon.Command.Generate as GenerateCommand
 
 
-listParser :: Parser Command
-listParser = subcommand "list" "List the generators available" $ pure ListCommand
-
-pathParser :: Parser Command
-pathParser = subcommand "path" "Display path information" $ pure PathCommand
-
-generateParser :: Parser Command
-generateParser = subcommand "generate" "Run the generator" $
-  GenerateCommand
-  <$> argText "generator" "The generator"
-  <*> optional (optText "args" 'a' "Arguments for the generator")
-
-parser :: Parser Command
-parser = listParser <|> pathParser <|> generateParser
-
 start :: IO ()
 start = do
-  command <- options "Renkon generators manager" parser
+  run_ $
+    Group "Generator manager"
+    [ subCmd "list" list'
+    , subCmd "path" path'
+    , subCmd "generate" generate'
+    ]
+
+list' :: Cmd "List available generators" ()
+list' = liftIO $ do
   config <- boot
-  runCommand config command
+  ListCommand.run config
 
-runCommand :: Config -> Command -> IO ()
-runCommand config ListCommand =
-  sh $ flip runReaderT config ListCommand.run
+path' :: Cmd "Display path information" ()
+path' = liftIO $ do
+  config <- boot
+  PathCommand.run config
 
-runCommand config PathCommand =
-  sh $ flip runReaderT config PathCommand.run
-
-runCommand config (GenerateCommand generator args) = do
-  sh $ flip runReaderT (config, generator, args) GenerateCommand.run
+generate'
+  :: Arg "<GENERATOR>" String
+  -> Arg "[ARGS...]" [String]
+  -> Cmd "Launch the generator" ()
+generate' generator args = liftIO $ do
+  let generator' = Text.pack $ get generator
+      args' = Text.pack <$> get args
+  config <- boot
+  GenerateCommand.run config generator' args'

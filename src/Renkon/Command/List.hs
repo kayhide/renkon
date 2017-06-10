@@ -5,7 +5,6 @@ module Renkon.Command.List where
 import Prelude hiding (FilePath)
 import Data.Maybe
 import Control.Monad
-import Control.Monad.Reader
 import Control.Lens.Operators
 import Turtle
 
@@ -13,10 +12,10 @@ import Renkon.Util
 import Renkon.Config
 
 
-run :: ReaderT Config Shell ()
-run = do
-  root' <- reader (^. path . renkonRoot)
-  bin' <- reader (^. path . renkonBin)
+run :: Config -> IO ()
+run config = sh $ do
+  let root' = config ^. path . renkonRoot
+      bin' = config ^. path . renkonBin
 
   onDirAbsence root' $ do
     withColor Red $ do
@@ -30,7 +29,7 @@ run = do
   onDirAbsence bin' $ do
     guard False
 
-  pre' <- reader (^. path . renkonPrefix)
+  let pre' = config ^. path . renkonPrefix
   withColor Green $ do
     stdout $ ls bin'
       >>= toRelative bin'
