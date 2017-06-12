@@ -11,6 +11,7 @@ import Options.Declarative as Options
 
 import Renkon.Config
 import Renkon.Command.List as ListCommand
+import Renkon.Command.Info as InfoCommand
 import Renkon.Command.Path as PathCommand
 import Renkon.Command.Generate as GenerateCommand
 
@@ -20,8 +21,9 @@ start = do
   run_ $
     Group "Generator manager"
     [ subCmd "list" list'
-    , subCmd "path" path'
+    , subCmd "info" info'
     , subCmd "generate" generate'
+    , subCmd "path" path'
     ]
 
 list'
@@ -32,10 +34,13 @@ list' detail = liftIO $ do
   config <- boot
   ListCommand.run config detail'
 
-path' :: Cmd "Display path information" ()
-path' = liftIO $ do
+info'
+  :: Arg "<GENERATOR>" String
+  -> Cmd "Display detail information of the generator" ()
+info' generator = liftIO $ do
+  let generator' = Text.pack $ get generator
   config <- boot
-  PathCommand.run config
+  InfoCommand.run config generator'
 
 generate'
   :: Arg "<GENERATOR>" String
@@ -46,3 +51,8 @@ generate' generator args = liftIO $ do
       args' = Text.pack <$> get args
   config <- boot
   GenerateCommand.run config generator' args'
+
+path' :: Cmd "Display path information" ()
+path' = liftIO $ do
+  config <- boot
+  PathCommand.run config
