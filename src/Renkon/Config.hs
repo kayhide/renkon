@@ -4,7 +4,10 @@
 
 module Renkon.Config where
 
-import Data.Text as Text
+import Data.Maybe
+import Data.List as List
+import Data.Text (Text)
+import qualified Data.Text as Text
 import Control.Lens
 import System.Environment
 import System.FilePath
@@ -26,16 +29,31 @@ data Config = Config
 
 makeLenses ''Config
 
-setupPathConfig :: IO PathConfig
-setupPathConfig = do
-  root' <- (</> ".renkon") <$> getHomeDirectory
-  return $ PathConfig root' (root' </> "bin/") "renkon-"
+
+-- * Booting
 
 boot :: IO Config
 boot = do
   config <- Config <$> setupPathConfig
   exportPath config
   return config
+
+
+-- * Utilities relating to cofig contents
+
+takeGeneratorName :: Config -> FilePath -> String
+takeGeneratorName config = stripPrefix' . takeBaseName
+  where
+    stripPrefix' x = fromMaybe x $ List.stripPrefix pre' x
+    pre' = Text.unpack $ config ^. path . renkonPrefix
+
+
+-- * Internal functions
+
+setupPathConfig :: IO PathConfig
+setupPathConfig = do
+  root' <- (</> ".renkon") <$> getHomeDirectory
+  return $ PathConfig root' (root' </> "bin/") "renkon-"
 
 exportPath :: Config -> IO ()
 exportPath config = do

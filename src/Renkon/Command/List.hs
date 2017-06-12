@@ -19,8 +19,8 @@ import Renkon.Util
 import Renkon.Config
 
 
-run :: Config -> IO ()
-run config = do
+run :: Config -> Bool -> IO ()
+run config detail = do
   let root' = config ^. path . renkonRoot
       bin' = config ^. path . renkonBin
 
@@ -35,15 +35,27 @@ run config = do
 
   path' <- getSearchPath
   gens' <- sequence $ findRenconGenerator config <$> path'
-  withColor Green $ do
-    mapM_ (displayList config) gens'
+  let displayItem = if detail then displayItemDetail else displayItemSimple
+  mapM_ (displayList (displayItem config)) gens'
 
-displayList :: Config -> [String] -> IO ()
-displayList config xs = mapM_ print' xs
-  where
-    print' = fprint (indent 2 % string % ln) . stripPrefix' . takeBaseName
-    stripPrefix' x = fromMaybe x $ List.stripPrefix pre' x
-    pre' = Text.unpack $ config ^. path . renkonPrefix
+
+displayList :: (FilePath -> IO ()) -> [FilePath] -> IO ()
+displayList displayItem xs = mapM_ displayItem xs
+
+displayItemSimple :: Config -> FilePath -> IO ()
+displayItemSimple config exe = do
+  withColor Green $ do
+    fprint (indent 2 % string % ln) . (takeGeneratorName config) $ exe
+
+displayItemDetail :: Config -> FilePath -> IO ()
+displayItemDetail config exe = do
+  withColor Green $ do
+    fprint (indent 2 % string % ln) . (takeGeneratorName config) $ exe
+  withColor Yellow $ do
+    fprint (indent 2 % string % ln) exe
+  withColor White $ do
+    mapM_ (fprint (indent 4 % string % ln)) . List.lines =<< execute' exe ["--help"]
+  fprint ln
 
 isRenconBinDir :: Config -> FindClause Bool
 isRenconBinDir config = List.isPrefixOf pre' <$> filePath

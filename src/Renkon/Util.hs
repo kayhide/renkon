@@ -14,6 +14,7 @@ import Control.Monad.IO.Class
 import System.Environment
 import System.FilePath
 import System.Directory
+import System.IO
 import System.Process
 import System.Console.ANSI
 import System.Console.ANSI.Types as X
@@ -30,6 +31,13 @@ which = findExecutable . Text.unpack
 execute :: FilePath -> [Text] -> IO ()
 execute exe args = callProcess exe $ Text.unpack <$> args
 
+-- | Execut a command and returns stdio.
+execute' :: FilePath -> [Text] -> IO String
+execute' exe args = do
+  (_, Just hout, _, _) <- createProcess (proc exe args') { std_out = CreatePipe }
+  hGetContents hout
+  where
+    args' = Text.unpack <$> args
 
 -- * Coloring
 

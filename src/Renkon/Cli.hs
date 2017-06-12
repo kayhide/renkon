@@ -24,10 +24,13 @@ start = do
     , subCmd "generate" generate'
     ]
 
-list' :: Cmd "List available generators" ()
-list' = liftIO $ do
+list'
+  :: Flag "d" '["detail"] "" "show detail infomation" Bool
+  -> Cmd "List available generators" ()
+list' detail = liftIO $ do
+  let detail' = get detail
   config <- boot
-  ListCommand.run config
+  ListCommand.run config detail'
 
 path' :: Cmd "Display path information" ()
 path' = liftIO $ do
