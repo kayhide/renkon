@@ -13,7 +13,7 @@ import Renkon.Config
 import Renkon.Command.List as ListCommand
 import Renkon.Command.Info as InfoCommand
 import Renkon.Command.Path as PathCommand
-import Renkon.Command.Generate as GenerateCommand
+import Renkon.Command.Exec as ExecCommand
 
 
 start :: IO ()
@@ -22,7 +22,7 @@ start = do
     Group "Generator manager"
     [ subCmd "list" list'
     , subCmd "info" info'
-    , subCmd "generate" generate'
+    , subCmd "exec" exec'
     , subCmd "path" path'
     ]
 
@@ -42,15 +42,15 @@ info' generator = liftIO $ do
   config <- boot
   InfoCommand.run config generator'
 
-generate'
+exec'
   :: Arg "<GENERATOR>" String
   -> Arg "[ARGS...]" [String]
   -> Cmd "Launch the generator" ()
-generate' generator args = liftIO $ do
+exec' generator args = liftIO $ do
   let generator' = Text.pack $ get generator
       args' = Text.pack <$> get args
   config <- boot
-  GenerateCommand.run config generator' args'
+  ExecCommand.run config generator' args'
 
 path' :: Cmd "Display path information" ()
 path' = liftIO $ do

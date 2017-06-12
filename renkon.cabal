@@ -22,7 +22,7 @@ library
                      , Renkon.Command.Path
                      , Renkon.Command.List
                      , Renkon.Command.Info
-                     , Renkon.Command.Generate
+                     , Renkon.Command.Exec
   build-depends:       base >= 4.7 && < 5
                      , text
                      , formatting

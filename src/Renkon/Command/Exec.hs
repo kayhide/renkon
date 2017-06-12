@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Renkon.Command.Generate
+module Renkon.Command.Exec
   ( run
   ) where
 
@@ -15,7 +15,7 @@ import Renkon.Util
 import Renkon.Config
 
 
--- | Run generate command.
+-- | Run exec command.
 run :: Config -> Text -> [Text] -> IO ()
 run config generator args = do
   gen <- which $ sformat (stext % stext) (config ^. path . renkonPrefix) generator
