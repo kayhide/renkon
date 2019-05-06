@@ -1,22 +1,19 @@
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
-
 module Renkon.Config where
 
-import Data.Maybe
+import Control.Lens
 import Data.List as List
+import Data.Maybe
 import Data.Text (Text)
 import qualified Data.Text as Text
-import Control.Lens
+import GHC.Generics
+import System.Directory
 import System.Environment
 import System.FilePath
-import System.Directory
-import GHC.Generics
 
 data PathConfig = PathConfig
-  { _renkonRoot :: FilePath
-  , _renkonBin :: FilePath
+  { _renkonRoot   :: FilePath
+  , _renkonBin    :: FilePath
   , _renkonPrefix :: Text
   }
   deriving (Show, Generic)

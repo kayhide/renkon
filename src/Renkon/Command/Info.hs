@@ -1,20 +1,13 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Renkon.Command.Info
   ( run
   ) where
 
-import Data.Maybe
+import Control.Lens.Operators
 import Data.List as List
 import Data.Text as Text
-import Control.Monad
-import Control.Monad.IO.Class
-import Control.Lens.Operators
-import System.FilePath
 import Formatting
-
-import Renkon.Util
 import Renkon.Config
+import Renkon.Util
 
 
 run :: Config -> Text -> IO ()
@@ -23,19 +16,19 @@ run config generator = do
 
   case exe of
     Nothing -> do
-      withColor Red $ do
+      withColor Red $
         fprint ("generator is not found." % ln)
-      withVivid White $ do
+      withVivid White $
         fprint ("  " % stext % ln) generator
-    Just exe' -> do
+    Just exe' ->
       displayItemDetail config exe'
 
 displayItemDetail :: Config -> FilePath -> IO ()
 displayItemDetail config exe = do
-  withColor Green $ do
-    fprint (indent 2 % string % ln) . (takeGeneratorName config) $ exe
-  withColor Yellow $ do
+  withColor Green $
+    fprint (indent 2 % string % ln) . takeGeneratorName config $ exe
+  withColor Yellow $
     fprint (indent 2 % string % ln) exe
-  withColor White $ do
+  withColor White $
     mapM_ (fprint (indent 4 % string % ln)) . List.lines =<< execute' exe ["--help"]
   fprint ln

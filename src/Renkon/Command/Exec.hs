@@ -1,18 +1,12 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Renkon.Command.Exec
   ( run
   ) where
 
-import Data.Maybe
-import Data.Text as Text
-import Control.Monad
 import Control.Lens.Operators
-import System.Process
+import Data.Text as Text
 import Formatting
-
-import Renkon.Util
 import Renkon.Config
+import Renkon.Util
 
 
 -- | Run exec command.
@@ -22,13 +16,13 @@ run config generator args = do
 
   case gen of
     Nothing -> do
-      withColor Red $ do
+      withColor Red $
         fprint ("generator is not found." % ln)
-      withVivid White $ do
+      withVivid White $
         fprint ("  " % stext % ln) generator
     Just gen' -> do
       fprint "Launching "
-      withBold Green $ do
+      withBold Green $
         fprint stext generator
       fprint (" generator..." % ln)
       launch gen' args

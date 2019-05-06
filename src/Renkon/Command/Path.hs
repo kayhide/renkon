@@ -1,14 +1,9 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Renkon.Command.Path where
 
-import Control.Monad
-import Control.Monad.Reader
 import Control.Lens.Operators
 import Formatting
-
-import Renkon.Util
 import Renkon.Config
+import Renkon.Util
 
 
 run :: Config -> IO ()

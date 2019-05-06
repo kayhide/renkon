@@ -1,22 +1,18 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Renkon.Command.List
   ( run
   ) where
 
-import Data.Maybe
-import Data.List as List
-import Data.Text as Text
+import Control.Lens.Operators
 import Control.Monad
 import Control.Monad.IO.Class
-import Control.Lens.Operators
+import Data.List as List
+import Data.Text as Text
+import Formatting
+import Renkon.Config
+import Renkon.Util
+import System.Directory
 import System.FilePath
 import System.FilePath.Find as FilePath
-import System.Directory
-import Formatting
-
-import Renkon.Util
-import Renkon.Config
 
 
 run :: Config -> Bool -> IO ()

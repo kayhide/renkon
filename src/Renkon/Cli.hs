@@ -1,23 +1,19 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE OverloadedStrings #-}
-
 module Renkon.Cli
   ( start
   ) where
 
-import Data.Text as Text
 import Control.Monad.IO.Class
+import Data.Text as Text
 import Options.Declarative as Options
-
-import Renkon.Config
-import Renkon.Command.List as ListCommand
-import Renkon.Command.Info as InfoCommand
-import Renkon.Command.Path as PathCommand
 import Renkon.Command.Exec as ExecCommand
+import Renkon.Command.Info as InfoCommand
+import Renkon.Command.List as ListCommand
+import Renkon.Command.Path as PathCommand
+import Renkon.Config
 
 
 start :: IO ()
-start = do
+start =
   run_ $
     Group "Generator manager"
     [ subCmd "list" list'

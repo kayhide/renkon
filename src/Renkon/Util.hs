@@ -1,24 +1,17 @@
-{-# LANGUAGE DefaultSignatures #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeFamilies #-}
-
 module Renkon.Util
   ( module Renkon.Util
   , module X
   ) where
 
-import Data.Maybe
+import Control.Monad.IO.Class
 import Data.Text as Text
 import Data.Text.Lazy.Builder as Text
-import Control.Monad.IO.Class
-import System.Environment
-import System.FilePath
+import Formatting
+import System.Console.ANSI
+import System.Console.ANSI.Types as X
 import System.Directory
 import System.IO
 import System.Process
-import System.Console.ANSI
-import System.Console.ANSI.Types as X
-import Formatting
 
 
 -- * System utilities
