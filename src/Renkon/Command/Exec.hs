@@ -2,8 +2,9 @@ module Renkon.Command.Exec
   ( run
   ) where
 
+import ClassyPrelude
+
 import Control.Lens.Operators
-import Data.Text as Text
 import Formatting
 import Renkon.Config
 import Renkon.Util

@@ -2,8 +2,8 @@ module Renkon.Cli
   ( start
   ) where
 
-import Control.Monad.IO.Class
-import Data.Text as Text
+import ClassyPrelude
+
 import Options.Declarative as Options
 import Renkon.Command.Exec as ExecCommand
 import Renkon.Command.Info as InfoCommand
@@ -34,7 +34,7 @@ info'
   :: Arg "<GENERATOR>" String
   -> Cmd "Display detail information of the generator" ()
 info' generator = liftIO $ do
-  let generator' = Text.pack $ get generator
+  let generator' = pack $ get generator
   config <- boot
   InfoCommand.run config generator'
 
@@ -43,8 +43,8 @@ exec'
   -> Arg "[ARGS...]" [String]
   -> Cmd "Launch the generator" ()
 exec' generator args = liftIO $ do
-  let generator' = Text.pack $ get generator
-      args' = Text.pack <$> get args
+  let generator' = pack $ get generator
+      args' = pack <$> get args
   config <- boot
   ExecCommand.run config generator' args'
 

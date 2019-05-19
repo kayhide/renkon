@@ -1,15 +1,14 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Renkon.Config where
 
+import ClassyPrelude
+
 import Control.Lens
-import Data.List as List
-import Data.Maybe
-import Data.Text (Text)
-import qualified Data.Text as Text
-import GHC.Generics
-import System.Directory
-import System.Environment
-import System.FilePath
+import GHC.Generics (Generic)
+import System.Directory (getHomeDirectory)
+import System.Environment (getEnv, setEnv)
+import System.FilePath (takeBaseName)
+
 
 data PathConfig = PathConfig
   { _renkonRoot   :: FilePath
@@ -41,8 +40,8 @@ boot = do
 takeGeneratorName :: Config -> FilePath -> String
 takeGeneratorName config = stripPrefix' . takeBaseName
   where
-    stripPrefix' x = fromMaybe x $ List.stripPrefix pre' x
-    pre' = Text.unpack $ config ^. path . renkonPrefix
+    stripPrefix' x = fromMaybe x $ stripPrefix pre' x
+    pre' = unpack $ config ^. path . renkonPrefix
 
 
 -- * Internal functions
@@ -56,4 +55,4 @@ exportPath :: Config -> IO ()
 exportPath config = do
   path' <- getEnv "PATH"
   let bin' = config ^. path . renkonBin
-  setEnv "PATH" $ bin' ++ ":" ++ path'
+  setEnv "PATH" $ bin' <> ":" <> path'

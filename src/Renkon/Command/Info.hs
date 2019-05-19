@@ -2,9 +2,9 @@ module Renkon.Command.Info
   ( run
   ) where
 
+import ClassyPrelude
+
 import Control.Lens.Operators
-import Data.List as List
-import Data.Text as Text
 import Formatting
 import Renkon.Config
 import Renkon.Util
@@ -30,5 +30,5 @@ displayItemDetail config exe = do
   withColor Yellow $
     fprint (indent 2 % string % ln) exe
   withColor White $
-    mapM_ (fprint (indent 4 % string % ln)) . List.lines =<< execute' exe ["--help"]
+    traverse_ (fprint (indent 4 % stext % ln)) . lines =<< execute' exe ["--help"]
   fprint ln

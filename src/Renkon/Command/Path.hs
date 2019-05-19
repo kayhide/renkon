@@ -1,5 +1,7 @@
 module Renkon.Command.Path where
 
+import ClassyPrelude
+
 import Control.Lens.Operators
 import Formatting
 import Renkon.Config

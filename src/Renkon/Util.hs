@@ -3,6 +3,8 @@ module Renkon.Util
   , module X
   ) where
 
+import ClassyPrelude
+
 import Control.Monad.IO.Class
 import Data.Text as Text
 import Data.Text.Lazy.Builder as Text
@@ -10,7 +12,6 @@ import Formatting
 import System.Console.ANSI
 import System.Console.ANSI.Types as X
 import System.Directory
-import System.IO
 import System.Process
 
 
@@ -25,10 +26,10 @@ execute :: FilePath -> [Text] -> IO ()
 execute exe args = callProcess exe $ Text.unpack <$> args
 
 -- | Execut a command and returns stdio.
-execute' :: FilePath -> [Text] -> IO String
+execute' :: FilePath -> [Text] -> IO Text
 execute' exe args = do
   (_, Just hout, _, _) <- createProcess (proc exe args') { std_out = CreatePipe }
-  hGetContents hout
+  decodeUtf8 <$> hGetContents hout
   where
     args' = Text.unpack <$> args
 

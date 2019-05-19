@@ -2,16 +2,14 @@ module Renkon.Command.List
   ( run
   ) where
 
+import ClassyPrelude
+
 import Control.Lens.Operators
-import Control.Monad
-import Control.Monad.IO.Class
-import Data.List as List
-import Data.Text as Text
 import Formatting
 import Renkon.Config
 import Renkon.Util
-import System.Directory
-import System.FilePath
+import System.Directory (doesDirectoryExist)
+import System.FilePath (getSearchPath)
 import System.FilePath.Find as FilePath
 
 
@@ -31,12 +29,12 @@ run config detail = do
 
   path' <- getSearchPath
   gens' <- sequence $ findRenconGenerator config <$> path'
-  let displayItem = if detail then displayItemDetail else displayItemSimple
-  mapM_ (displayList (displayItem config)) gens'
+  let displayItem = bool displayItemSimple displayItemDetail detail
+  traverse_ (displayList (displayItem config)) gens'
 
 
 displayList :: (FilePath -> IO ()) -> [FilePath] -> IO ()
-displayList displayItem xs = mapM_ displayItem xs
+displayList displayItem xs = traverse_ displayItem xs
 
 displayItemSimple :: Config -> FilePath -> IO ()
 displayItemSimple config exe = do
@@ -50,18 +48,18 @@ displayItemDetail config exe = do
   withColor Yellow $ do
     fprint (indent 2 % string % ln) exe
   withColor White $ do
-    mapM_ (fprint (indent 4 % string % ln)) . List.lines =<< execute' exe ["--help"]
+    traverse_ (fprint (indent 4 % stext % ln)) . lines =<< execute' exe ["--help"]
   fprint ln
 
 isRenconBinDir :: Config -> FindClause Bool
-isRenconBinDir config = List.isPrefixOf pre' <$> filePath
+isRenconBinDir config = isPrefixOf pre' <$> filePath
   where
     pre' = config ^. path . renkonBin
 
 isRenconGenerator :: Config -> FindClause Bool
-isRenconGenerator config = List.isPrefixOf pre' <$> fileName
+isRenconGenerator config = isPrefixOf pre' <$> fileName
   where
-    pre' = Text.unpack $ config ^. path . renkonPrefix
+    pre' = unpack $ config ^. path . renkonPrefix
 
 findRenconGenerator :: Config -> FilePath -> IO [FilePath]
 findRenconGenerator config dir = do
